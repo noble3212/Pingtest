@@ -1,11 +1,59 @@
 <!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><title>Ping Simulator</title></head>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Ping Simulator</title>
+  <style>
+    body {
+      background: #000;
+      color: #fff;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 50px;
+    }
+    input, button {
+      background: #111;
+      color: #eee;
+      border: 1px solid #333;
+      padding: 8px;
+      margin: 5px;
+      border-radius: 4px;
+    }
+    input::placeholder {
+      color: #888;
+    }
+    #output {
+      margin-top: 20px;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
 <body>
-  <label>Enter IP or URL:</label><br>
-  <input type="text" id="addr" placeholder="e.g. 8.8.8.8"><br>
+  <label for="addr">Enter IP or URL:</label><br>
+  <input id="addr" type="text" placeholder="e.g. 8.8.8.8"><br>
   <button onclick="testPing()">Ping!</button>
   <div id="output"></div>
-  <script src="ping.js"></script>
+
+  <script>
+    function testPing() {
+      const addr = document.getElementById('addr').value.trim();
+      const out = document.getElementById('output');
+      if (!addr) return out.textContent = '⛔ Please enter an address.';
+
+      out.textContent = 'Pinging...';
+      const start = performance.now();
+      fetch('https://' + addr + '/', { mode: 'no-cors' })
+        .then(() => {
+          const latency = (performance.now() - start).toFixed(1);
+          out.textContent = `✅ Reachable — approx. ${latency} ms (HTTP round‑trip)`;
+        })
+        .catch((_) => {
+          const latency = (performance.now() - start).toFixed(1);
+          out.textContent = `❌ Unreachable or blocked — time: ${latency} ms`;
+        });
+    }
+  </script>
 </body>
 </html>
